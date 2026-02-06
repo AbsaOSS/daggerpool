@@ -1,0 +1,17 @@
+# Ignore everything
+*
+
+# But not these files...
+
+!*.go
+!go.sum
+!go.mod
+!*.yaml
+
+!README.md
+!LICENSE
+!/.gitignore
+!.yamllint
+!renovate.json
+# ...even if they are in subdirectories
+!*/

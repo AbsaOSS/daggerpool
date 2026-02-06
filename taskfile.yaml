@@ -1,0 +1,32 @@
+# https://taskfile.dev/usage/
+---
+version: '3'
+interval: '1500ms'
+# env:
+#   LOCALBIN: /bin
+#   TFENV_TERRAFORM_VERSION: 1.5.7
+
+# dotenv: ['.env']
+
+tasks:
+  mocks:
+    cmds:
+      - go install go.uber.org/mock/mockgen@v0.6.0
+      - mockgen -package=workerpool -destination=./pkg/workerpool/jobs_mock.go -source=./pkg/workerpool/job.go Job
+      - mockgen -package=store -destination=./pkg/store/store_mock.go -source=./pkg/store/store.go Store
+
+  test:
+    - go test ./... -coverprofile cover.out
+    - go test -race ./...
+
+  build:
+    - go build ./...
+
+  lint:
+    cmds:
+      - yamllint .
+      - goimports -w ./
+      - golangci-lint run -c .golangci.yaml
+      - task mocks
+      - task build
+      - GOTOOLCHAIN=go1.25.0+auto go test $(go list ./... | grep -Ev '/v1|/cmd|/crud|/helm|/logging|/mocks|/externaldns|/k8s|/provider') -coverprofile cover.out
