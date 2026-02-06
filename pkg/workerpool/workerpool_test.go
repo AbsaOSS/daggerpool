@@ -1,4 +1,4 @@
-//nolint:dupl, lll
+//nolint:dupl
 package workerpool
 
 import (
