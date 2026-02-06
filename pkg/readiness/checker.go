@@ -1,21 +1,14 @@
 package readiness
 
 import (
+	"context"
 	"fmt"
 )
 
+// Checker checks readiness and returns a Status.
+// It may be a single probe, watch or a polling wait, depending on implementation.
 type Checker interface {
-	// Wait waits for the given resource to be ready for the given amount of time.
-	// (false, nil) if the resource is not ready yet,
-	// (true, nil) if the resource is ready
-	// (false, error) if there is an error or timeouts
-	Wait(id fmt.Stringer, minutes int32, readyFunc func() (bool, error)) error
-
-	// IsReady waits for the given resource to be ready for the given amount of time.
-	// (InProgress, nil) if the resource is not ready yet,
-	// (Ready, nil) if the resource is ready
-	// (Error, error) if there is an error
-	IsReady(id fmt.Stringer, readyFunc func() (bool, error)) (ReadyStatus, error)
+	Check(ctx context.Context, id fmt.Stringer, check func(context.Context) (bool, error)) (ReadyStatus, error)
 }
 
 type ReadyStatus int
